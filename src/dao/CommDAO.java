@@ -17,9 +17,9 @@ public class CommDAO
 {
 	public static String dbname = "";
 	public static String dbtype = "";
-	
+
 	public static Connection conn = null;
-	
+
 	public CommDAO()
 	{
 		conn = this.getConn();
@@ -37,7 +37,7 @@ public class CommDAO
 		 int j = Integer.parseInt(num);
 		 commOper("update "+tablename+" set "+colname+" = "+(i+j)+" where id="+id);
 	 }
-	
+
 	 //	该方法返回一个table 用于流动图片
 	public String DynamicImage(String categoryid,int cut,int width,int height){
 
@@ -45,26 +45,26 @@ public class CommDAO
 		StringBuffer thePics1 = new StringBuffer();
 		StringBuffer theLinks1 = new StringBuffer();
 		StringBuffer theTexts1 = new StringBuffer();
-	
+
 		imgStr.append("<div id=picViwer1  style='background-color: #ffffff' align=center></div><SCRIPT src='js/dynamicImage.js' type=text/javascript></SCRIPT>\n<script language=JavaScript>\n");
 		thePics1.append("var thePics1=\n'");
 		theLinks1.append("var theLinks1='");
 		theTexts1.append("var theTexts1='");
-		
+
 		List<HashMap> co = this.select("select * from xinwentongzhi where shouyetupian<>'' and shouyetupian<>'null'  and shouyetupian  like '%.jpg' order by id desc",1,6);
 		int i = co.size();
-		
-		int j = 0; 
+
+		int j = 0;
 		for(HashMap b:co)
 		{
-			j++; 
+			j++;
 		int id = Integer.parseInt(b.get("id").toString()) ;
 		String title = Info.subStr(b.get("biaoti").toString(), 21) ;
-		
+
 		String url = ""+b.get("shouyetupian");
-		
+
 		String purl = "gg_detail.jsp?id="+b.get("id");
-		
+
 		if(j!=i){
 		thePics1.append(url.replaceAll("\n", "")+"|");
 		theLinks1.append(purl+"|");
@@ -76,10 +76,10 @@ public class CommDAO
 			theLinks1.append("gg_detail.jsp?id="+b.get("id"));
 			theTexts1.append(title);
 		}
-		
+
 		}
 	   thePics1.append("';");
-		
+
 		theLinks1.append("';");
 		theTexts1.append("';");
 		imgStr.append(thePics1+"\n");
@@ -88,8 +88,8 @@ public class CommDAO
 		imgStr.append("\n setPic(thePics1,theLinks1,theTexts1,"+width+","+height+",'picViwer1');</script>");
 		return imgStr.toString();
 	}
-	
-	 
+
+
 
 
 		public HashMap getmap(String id,String table)
@@ -125,7 +125,7 @@ public class CommDAO
 			}
 			return list.get(0);
 		}
-		
+
 		public HashMap getmaps(String nzd,String zdz,String table)
 		{
 			List<HashMap> list = new ArrayList();
@@ -159,9 +159,9 @@ public class CommDAO
 			}
 			return list.get(0);
 		}
-		
-		
-		 
+
+
+
 		public String insert(HttpServletRequest request,HttpServletResponse response, String tablename,HashMap extmap,boolean alert,boolean reflush,String tzurl)
 		{
 			extmap.put("addtime", Info.getDateStr());
@@ -169,15 +169,15 @@ public class CommDAO
 			HashMap typemap = new HashMap();
 			ArrayList<String> collist = new ArrayList();
 			String sql = "insert into "+tablename+"(";
-			
-		 
+
+
 			Connection conn = this.getConn();
 			try {
 				Statement st = conn.createStatement();
 			    ResultSet rs = st.executeQuery("select * from "+tablename);
 			    ResultSetMetaData rsmd = rs.getMetaData();
 	            int i = rsmd.getColumnCount();
-			    	 
+
 			    	for(int j=1;j<=i;j++)
 			    	{
 			    	if(rsmd.getColumnName(j).equals("id"))continue;
@@ -189,7 +189,7 @@ public class CommDAO
 	    	    	sql+=rsmd.getColumnName(j)+",";
 			    	}
 			    	sql = sql.substring(0,sql.length()-1);
-			    
+
 			    sql+=") values(";
 			    rs.close();
 			    st.close();
@@ -215,23 +215,23 @@ public class CommDAO
 			    			if(vstr==null)vstr="";
 			    			if(vstr.equals("null"))vstr="";
 			    			if(vstr.trim().equals(""))continue;
-			    			
+
 			    			if(request.getParameter(vstr)!=null&&!"".equals(request.getParameter(vstr))&&request.getParameter("dk-"+str+"-value")!=null)
 			    			{
 			    				String dkv = request.getParameter(vstr);
 			    				String dknamevalue = request.getParameter("dk-"+str+"-value");
 			    				vstr+=" - "+dknamevalue+":"+dkv;
 			    			}
-			    			
+
 			    			value+=vstr+" ~ ";
-			    			
-			    			
-			    			
+
+
+
 			    		}
 			    		if(value==null)value="";
 		    			if(value.equals("null"))value="";
 			    		if(value.length()>0)value=value.substring(0,value.length()-3);
-			    		 
+
 			    	    if(typemap.get(str+"---").equals("int"))
 			    	    {
 			    		sql+=(value.equals("")?-10:value)+",";
@@ -247,13 +247,13 @@ public class CommDAO
 			    	    }
 			    	}
 			    }
-			    
+
 			    sql=sql.substring(0,sql.length()-1)+")";
 			    System.out.println(sql);
 			    this.commOper(sql);
-			  
+
 			    st.close();
-			     
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -276,10 +276,10 @@ public class CommDAO
 			{
 				str+="location.href='"+tzurl+"';\n";
 			}
-			
+
 			str+="</script>";
-			
-			
+
+
 			PrintWriter wrt = null;
 			try {
 			wrt = response.getWriter();
@@ -289,13 +289,13 @@ public class CommDAO
 			}
 			wrt.write(str);
 			}
-			
+
 			return "";
 		}
-		
+
 		public void delete(HttpServletRequest request,String tablename)
 		{
-			
+
 			int i = 0;
 			try {
 				String did = request.getParameter("did");
@@ -308,40 +308,40 @@ public class CommDAO
 				 st.close();
 					}
 				}
-				 
-				   
+
+
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 
+			}
 		}
 
-		
-		
+
+
 		public String getCols(String table)
-		{  
+		{
 			String str = "";
 			Connection conn = this.getConn();
 			try {
 				Statement st = conn.createStatement();
 			    ResultSet rs = st.executeQuery("select * from "+table);
 			    ResultSetMetaData rsmd = rs.getMetaData();
-			    
-			    int i = rsmd.getColumnCount(); 
+
+			    int i = rsmd.getColumnCount();
 		    	for(int j=2;j<=i;j++)
 		    	{
 		    	str+=rsmd.getColumnName(j)+",";
 		    	}
-			    
+
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
 			str = str.substring(0,str.length()-1);
-			 
+
 			return str;
 		}
-		
-		
+
+
 		public String update(HttpServletRequest request,HttpServletResponse response, String tablename,HashMap extmap,boolean alert,boolean reflush,String tzurl)
 		{
 			if(request.getParameter("f")!=null){
@@ -371,7 +371,7 @@ public class CommDAO
 			    	collist.add(rsmd.getColumnName(j));
 	    	    	if(names.indexOf(","+rsmd.getColumnName(j)+",")>-1)
 	    	    	{
-	    	    		
+
 	    	    		String[] values = request.getParameterValues(rsmd.getColumnName(j));
 			    		String value="";
 			    		for(String vstr:values)
@@ -379,7 +379,7 @@ public class CommDAO
 			    			if(vstr==null)vstr="";
 			    			if(vstr.equals("null"))vstr="";
 			    			if(vstr.trim().equals(""))continue;
-			    			
+
 			    			if(request.getParameter(vstr)!=null&&!"".equals(request.getParameter(vstr))&&request.getParameter("dk-"+rsmd.getColumnName(j)+"-value")!=null)
 			    			{
 			    				String dkv = request.getParameter(vstr);
@@ -393,7 +393,7 @@ public class CommDAO
 			    		if(value==null)value="";
 		    			if(value.equals("null"))value="";
 			    		if(value.length()>0)value=value.substring(0,value.length()-3);
-	    	    		
+
 	    	    		if(rsmd.getColumnTypeName(j).equals("int"))
 	    	    		{
 	    	    		 sql+=rsmd.getColumnName(j)+"="+value+",";
@@ -419,8 +419,8 @@ public class CommDAO
 			    	st1.execute(sql);
 			    	st1.close();
 			    rs.close();
-			    st.close(); 
-			     
+			    st.close();
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -443,10 +443,10 @@ public class CommDAO
 			{
 				str+="location.href='"+tzurl+"';\n";
 			}
-			
-			 
+
+
 			str+="</script>\n";
-			
+
 			PrintWriter wrt = null;
 			try {
 				//request.get
@@ -459,21 +459,21 @@ public class CommDAO
 			}
 	        return "";
 		}
-		
-		
-	
+
+
+
 		public Connection getConn()
 		{
 		        try
-		        { 
+		        {
 		        	if(conn==null||conn.isClosed()){
-		        		
+
 		        		 Class.forName("com.mysql.jdbc.Driver");
-			        	 conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduation_goods2","root","123456");
-						 
+			        	 conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/graduation_226_goods2","root","123456");
+
 //						 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 //			        	 conn = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=jspmhyzzglxthsg9411C8","sa","sa123456");
-			        	 
+
 			        	// Class.forName("net.sourceforge.jtds.jdbc.Driver");
 			        	// conn = DriverManager.getConnection("jdbc:jtds:sqlserver://127.0.0.1:1433;databaseName=jspmhyzzglxthsg9411C8","sa","sa123456");
 		            }}
@@ -483,8 +483,8 @@ public class CommDAO
 		        }
 		        return conn;
 		}
-	
-	
+
+
 	public int getInt(String sql)
 	{
 		int i = 0;
@@ -502,8 +502,8 @@ public class CommDAO
 		}
 		return i;
 	}
-	
-	
+
+
 	public double getDouble(String sql)
 	{
 		double i = 0;
@@ -513,7 +513,7 @@ public class CommDAO
 			if(rs.next())
 			{
 				i = rs.getDouble(1);
-				
+
 			}
 			    st.close();
 		} catch (SQLException e) {
@@ -522,7 +522,7 @@ public class CommDAO
 		}
 		return i;
 	}
-	
+
 	public void commOper(String sql)
 	{
 		System.out.println(sql);
@@ -535,10 +535,10 @@ public class CommDAO
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void commOperSqls(ArrayList<String> sql)
 	{
-		
+
 		try {
 			conn.setAutoCommit(false);
 			for(int i=0;i<sql.size();i++)
@@ -564,17 +564,17 @@ public class CommDAO
 			}
 		}
 	}
-	
-	
+
+
 	public List<HashMap> select(String sql)
-	{ 
+	{
 		System.out.println(sql);
 		List<HashMap> list = new ArrayList();
 		try {
 			Statement st = conn.createStatement();
 		    ResultSet rs = st.executeQuery(sql);
 		    ResultSetMetaData rsmd = rs.getMetaData();
-           
+
 		    while(rs.next())
 		    {
 		    	HashMap map = new HashMap();
@@ -596,7 +596,7 @@ public class CommDAO
 		    st.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			
+
 			if(sql.equals("show tables"))
 			list = select("select table_name from   INFORMATION_SCHEMA.tables");
 			else
@@ -604,8 +604,8 @@ public class CommDAO
 		}
 		return list;
 	}
-	
-	
+
+
 	public List<List> selectforlist(String sql)
 	{
 		List<List> list = new ArrayList();
@@ -613,7 +613,7 @@ public class CommDAO
 			Statement st = conn.createStatement();
 		    ResultSet rs = st.executeQuery(sql);
 		    ResultSetMetaData rsmd = rs.getMetaData();
-           
+
 		    while(rs.next())
 		    {
 		    	List<String> list2 = new ArrayList();
@@ -639,13 +639,13 @@ public class CommDAO
 		}
 		return list;
 	}
-	
-	
+
+
 	public void close()
 	{
-		 
+
 	}
-	
+
 	/**
 	 * 执行一条查询sql,以 List<hashmap> 的形式返回查询的记录，记录条数，和从第几条开始，由参数决定，主要用于翻页
 	 * pageno 页码  rowsize 每页的条数
@@ -657,10 +657,10 @@ public class CommDAO
 			list=this.select(sql);
 			int min = (pageno-1)*rowsize;
 			int max = pageno*rowsize;
-			
+
 			for(int i=0;i<list.size();i++)
 			{
-				
+
 				if(!(i<min||i>(max-1)))
 				{
 				mlist.add(list.get(i));
@@ -670,15 +670,15 @@ public class CommDAO
 			re.printStackTrace();
 			throw re;
 		}
-		
-		
+
+
 		return mlist;
 	}
-	
 
-	
-	
-	public static void main(String[] args) { 
+
+
+
+	public static void main(String[] args) {
 	}
 }
 
